@@ -94,3 +94,26 @@ def receive_event(
         "event_id": db_event.id,
         "occurrence_count": db_event.occurrence_count,
     }
+
+@app.get("/events")
+def list_events(
+    db: Session = Depends(get_db),
+):
+    events = (
+        db.query(ErrorEventModel)
+        .order_by(ErrorEventModel.id.desc())
+        .all()
+    )
+
+    return [
+        {
+            "id": event.id,
+            "type": event.type,
+            "message": event.message,
+            "timestamp": event.timestamp,
+            "app_name": event.app_name,
+            "environment": event.environment,
+            "occurrence_count": event.occurrence_count,
+        }
+        for event in events
+    ]
