@@ -1,5 +1,6 @@
 import hashlib
 from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 
@@ -9,6 +10,13 @@ from models import ErrorEventModel
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 Base.metadata.create_all(bind=engine)
 
@@ -117,3 +125,28 @@ def list_events(
         }
         for event in events
     ]
+
+@app.get("/events/{event_id}")
+def get_event(
+    event_id: int,
+    db: Session = Depends(get_db),
+):
+    event = (
+        db.query(ErrorEventModel)
+        .filter(ErrorEventModel.id == event_id)
+        .first()
+    )
+
+    if event is None:
+        return {"error": "Event not found"}
+
+    return {
+        "id": event.id,
+        "type": event.type,
+        "message": event.message,
+        "timestamp": event.timestamp,
+        "app_name": event.app_name,
+        "environment": event.environment,
+        "occurrence_count": event.occurrence_count,
+        "stack_trace": event.stack_trace,
+    }
