@@ -16,3 +16,6 @@ dist/
 
 # VS Code
 .vscode/
+
+# Local database
+*.db
