@@ -13,3 +13,5 @@ class ErrorEventModel(Base):
     app_name = Column(String, nullable=False)
     environment = Column(String, nullable=False)
     stack_trace = Column(Text, nullable=False)
+    fingerprint = Column(String, nullable=False, index=True)
+    occurrence_count = Column(Integer, nullable=False, default=1)
