@@ -1,5 +1,4 @@
-from tracelite import capture_exception
-
+from tracelite import capture_exception, send_event
 
 try:
     1 / 0
@@ -9,4 +8,5 @@ except Exception as exc:
         app_name="demo-app",
         environment="development",
     )
-    print(event)
+    response = send_event(event)
+    print(response)
